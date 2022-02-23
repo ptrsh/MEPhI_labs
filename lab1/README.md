@@ -5,4 +5,6 @@
 ```
 make all test clean
 ```
+![image](https://user-images.githubusercontent.com/23241074/155384128-14ab2ab5-98a5-4798-b029-1d9e588b8c30.png)
+
 ### !!! Для запуска необходима библиотека readline !!!
