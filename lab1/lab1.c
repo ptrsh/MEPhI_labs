@@ -32,7 +32,6 @@ int find_nearest_fibonacci(int n);
 int* find_representation(int num);
 
 int main() {
-    
     printf("--Ввод m--\n");
     int m = read_integer();
     printf("Всего чисел: %d\n\n", m);
@@ -48,7 +47,7 @@ int main() {
 
     print_matrix(&matr, m);
     free_matrix(&matr, m);
-
+    return 0;
 }
 
 void init_matrix(Matrix *matr, int m) {
@@ -108,7 +107,7 @@ int str_to_integer(char *s) {
         return 0;
     }   
     for (int i = 0; s[i] != '\0'; ++i) {
-        if ('0' > s[i] | s[i] > '9') {
+        if ((s[i] < '0') | (s[i] > '9')) {
             free(s);
             return 0;
         } else {
@@ -128,14 +127,15 @@ int read_integer() {
             return possible_num;
         else
             printf("Вы ввели некорректное число. Попробуйте ещё раз!\n");
-    } while (!possible_num);    
+    } while (!possible_num);
+    return -1;    
 }
 
 int find_nearest_fibonacci(int n){
     /*
         находит наибольшее число Фибоначчи, меньшее n
     */
-    if (n == 0 | n == 1)
+    if ((n == 0) | (n == 1))
         return n;
     int num1 = 0;
     int ans = 1;
