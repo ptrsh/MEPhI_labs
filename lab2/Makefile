@@ -2,8 +2,6 @@ CC = gcc
 
 CFLAGS = -g -std=c11
 
-LDLIBS = -lreadline
-
 TESTFLAGS = --leak-check=full -s
 
 SRCS_LIST = library/stack_list.c library/list.c
@@ -19,7 +17,7 @@ endif
 all: Lab2
 
 Lab2: main.c $(OBJS)
-	$(CC) $(CFLAGS) $(SRCS) main.c $(LDLIBS) -o main
+	$(CC) $(CFLAGS) $(SRCS) main.c -o main
 
 test:
 	valgrind $(TESTFLAGS) ./main
