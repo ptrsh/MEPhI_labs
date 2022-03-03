@@ -6,20 +6,20 @@ LDLIBS = -lreadline
 
 TESTFLAGS = --leak-check=full -s
 
-OBJS_LIST = stack_list.o list.o
+SRCS_LIST = library/stack_list.c library/list.c
 
-OBJS_VECTOR = stack_vector.o vector.o
+SRCS_VECTOR = library/stack_vector.c library/vector.c
 
 ifeq ($(struct), vector)
-	OBJS = $(OBJS_VECTOR)
+	SRCS = $(SRCS_VECTOR)
 else
-	OBJS = $(OBJS_LIST)
+	SRCS = $(SRCS_LIST)
 endif
 
 all: Lab2
 
 Lab2: main.c $(OBJS)
-	$(CC) $(CFLAGS) $(OBJS) main.c $(LDLIBS) -o main
+	$(CC) $(CFLAGS) $(SRCS) main.c $(LDLIBS) -o main
 
 test:
 	valgrind $(TESTFLAGS) ./main
@@ -27,14 +27,4 @@ test:
 clean:
 	rm -f *.o
 
-list.o: library/list.c
-	$(CC) -c library/list.c
 
-stack_list.o: list.o library/stack_list.c
-	$(CC) list.o -c library/stack_list.c
-
-vector.o: library/vector.c
-	$(CC) -c library/vector.c
-
-stack_vector.o: vector.o library/stack_vector.c
-	$(CC) vector.o -c library/stack_vector.c
