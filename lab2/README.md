@@ -6,12 +6,10 @@
 ```
 make all test clean struct=vector
 ```
-![image](https://i2.paste.pics/7dd51af6fbc05fca1bcbae4eb37185ea.png?trs=ae49b001abae98c1bbe709082fbe5fe45e08442e7f963e37e5ebbafb731c22b4)
+![image](https://i2.paste.pics/0a2d3e2459709a9f7845e1f423f45c9b.png)
 ## Выбор структуры:
 
 ```
 struct=vector
 struct=list
 ```
-
-### !!! Для запуска необходима библиотека readline !!!

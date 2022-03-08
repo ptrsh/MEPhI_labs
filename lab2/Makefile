@@ -8,10 +8,12 @@ SRCS_LIST = library/stack_list.c library/list.c
 
 SRCS_VECTOR = library/stack_vector.c library/vector.c
 
+SRCS_STR = library/str.c
+
 ifeq ($(struct), vector)
-	SRCS = $(SRCS_VECTOR)
+	SRCS = $(SRCS_VECTOR) $(SRCS_STR)
 else
-	SRCS = $(SRCS_LIST)
+	SRCS = $(SRCS_LIST) $(SRCS_STR)
 endif
 
 all: Lab2
@@ -23,6 +25,6 @@ test:
 	valgrind $(TESTFLAGS) ./main
 
 clean:
-	rm -f *.o
+	rm -f *.o main
 
 

@@ -1,47 +1,22 @@
 #include <stdio.h>
 #include "library/stack.h"
+#include "library/str.h"
 #include <malloc.h>
-#include <string.h>
 
-char *get_str();
 int priority(char ch);
 int is_var(char ch);
 void infix_to_postfix(char *str);
 
 int main(){
-    printf("Введите инфиксную нотацию:\n");
-    char *input = get_str();
-    infix_to_postfix(input);
-    free(input);
-    return 0;
-}
+    str_t input;
+    str_init(&input);
 
-char *get_str() {
-    char buf[81] = {0};
-    char *res = NULL;
-    int len = 0;
-    int n = 0;
-    do {
-        n = scanf("%80[^\n]", buf);
-        if (n < 0) {
-            if (!res) {
-                return NULL;
-        }
-    } else if (n > 0){
-        int chunk_len = strlen(buf);
-        int str_len = len + chunk_len;
-        res = realloc(res, str_len + 1);
-        memcpy(res + len, buf, chunk_len);
-        len = str_len;
-    } else
-        scanf("%*c");
-    
-    } while (n>0);
-    if (len > 0)
-        res[len] = '\0';
-    else 
-        res = calloc(1, sizeof(char));
-    return res;
+    printf("Введите инфиксную нотацию:\n");
+    str_get(&input);
+    infix_to_postfix(input.text);
+
+    str_free(&input);
+    return 0;
 }
 
 int priority(char ch) {
@@ -54,6 +29,8 @@ int priority(char ch) {
         case '*':
         case '/':
             return 2;
+        default:
+            return -1;
     }
 }
 
@@ -63,28 +40,38 @@ int is_var(char ch) {
 
 void infix_to_postfix(char *str) {
     stack_t stack;
+    str_t postfix;
     stack_init(&stack);
+    str_init(&postfix);
     char x;
-    printf("[Output] ");
+
     for (int i = 0; str[i] != '\0'; ++i) {
         if (is_var(str[i]))
-            printf("%c", str[i]);
+            str_add(&postfix, str[i]);
         else if (str[i] == '(')
             stack_push(&stack, str[i]);
         else if (str[i] == ')') {
-            while((x = stack_pop(&stack)) != '(')
-                printf("%c", x);
+            while(((x = stack_pop(&stack)) != '(') && (!stack_is_empty(&stack)))
+                str_add(&postfix, x);
         }
         else {
+            if (priority(str[i])== -1) {
+                printf("Был введён некорректный оператор!\n");
+                stack_free(&stack);
+                str_free(&postfix);
+                return;
+            }
             while (priority(stack_peek(&stack))>=priority(str[i]))
-                printf("%c", stack_pop(&stack));
+                str_add(&postfix, stack_pop(&stack));
             stack_push(&stack, str[i]);
         }
     }
-   
     while(!stack_is_empty(&stack))
-        printf("%c", stack_pop(&stack));
+        str_add(&postfix, stack_pop(&stack));
     
-    printf("\n");
+    printf("Постфиксная нотация:\n");
+    str_print(&postfix);
+
     stack_free(&stack);
+    str_free(&postfix);
 }
