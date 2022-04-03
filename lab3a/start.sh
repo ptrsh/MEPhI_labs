@@ -1,0 +1,1 @@
+cd "/home/chirik/labs/lab3a/" && gcc -g main.c models/table_model.c models/keyspace1.c models/keyspace2.c models/key.c models/item.c models/keyspaces.c -o main -std=c11 && "/home/chirik/labs/lab3a/"main
