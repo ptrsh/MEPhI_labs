@@ -25,8 +25,6 @@ void app_start(app_t *app) {
 }
 
 void app_finish(app_t *app) {
-    //мб вьюшку сюда запилить
-    printf("POKAPOKAPOKA!\n");
     table_free(app->table);
     free(app);
 }
