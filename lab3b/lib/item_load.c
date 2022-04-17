@@ -1,7 +1,6 @@
 #include "stdio.h"
 #include "stdlib.h"
-#include "string.h"
-
+#include "string.h" 
 
 offset fileItemAppend(Item *item) {
     offset ptr = fileStringAppend(item->content);
