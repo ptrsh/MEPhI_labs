@@ -1,68 +1,89 @@
-#include <stdio.h>
-#include <string.h>
-#include <malloc.h>
+#include "string.h"
+
+#include "../other/item_helper.h"
+#include "../other/keyspace1_helper.h"
 #include "keyspace1.h"
 
-int keyspace1_check(KeySpace_t* KeySpace, int size, char *key) {
-    for (int i=0; i < size; i++) {
-        if (KeySpace->busy[i] == 1)
-            if(strcmp(KeySpace->keys[i]->item->key1, key) == 0)
-                return i;
-    }
-    if (KeySpace->length != size)
-        return -1;
-    return -2;
+KeySpace1 *keyspace1_init(int size) {
+    KeySpace1 *this = malloc(sizeof(KeySpace1));
+    this->items = calloc(size, sizeof(unsigned long));
+    this->size = size;
+    this->used = 0;
+    unsigned long ptr = file_add_keyspace1(this);
+    keyspace1_free(this);
+    return ptr;
 }
 
-void keyspace1_add(KeySpace_t *KeySpace, int position, Item *item) {
-    if (position == -1) {
-        Key *Key = key_create(item);
-        KeySpace->keys[KeySpace->length] = Key;
-        KeySpace->busy[KeySpace->length] = 1;
-        KeySpace->length += 1;
-    }
-    else {
-        Key **head = &(KeySpace->keys[position]);
-        int max_release;
-        while ((*head)) {
-            if (strcmp((*head)->item->key2, item->key2) == 0) {
-                item_add(&((*head)->item), item);
-                return;
-            }
-            max_release = (*head)->release;
-            head = &(*head)->next;
-        }
-        
-        Key *Key = key_create(item);
-        (*head) = Key;
-        (*head)->release = max_release + 1;
-        (*head)->next = NULL;
-    }
-        
-}
-
-int keyspace1_reorganise(KeySpace_t *KeySpace, int size) {
-    if (KeySpace->length == size)
-        return size;
+int keyspace1_can_insert(KeySpace1 *this) {
     
-    int real_length = 0;
-    int real_key = 0;
+    this = file_load_keyspace1(this);
+    int res = this->used < this->size;
+    keyspace1_free(this);
+    return res;
+}
 
-    for (int source_index = 0; source_index < size; source_index++) {
-        if (KeySpace->busy[source_index] == 1) {
-            KeySpace->busy[real_length++] = KeySpace->busy[source_index];
-            KeySpace->keys[real_key++] = KeySpace->keys[source_index];
+int keyspace1_found(KeySpace1 *this, Item **dest, char *key) {
+    
+    
+    this = file_load_keyspace1(this);
+    for (int i = 0; i < this->used; i++) {
+        Item *item = file_load_item(this->items[i]);
+        if (strcmp(item->key1, key) == 0) {
+            *dest = this->items[i];
+            item_free(item);
+            keyspace1_free(this);
+            return 1;
         }
+        item_free(item);
     }
+    keyspace1_free(this);
+    return 0;
+}
 
-    for (int i = real_length; i < size; i++)
-        if (KeySpace->busy[i] == 1) {
-            key_free(KeySpace->keys[i]);
-            KeySpace->busy[i] = 0;
+void keyspace1_add(KeySpace1 *this, Item *item) {
+    
+    
+    unsigned long ptr = this;
+    this = file_load_keyspace1(this);
+    this->items[this->used++] = item;
+    file_update_keyspace1(this, ptr);
+    keyspace1_free(this);
+}
+
+KeySpace1 *keySpace1Range(KeySpace1 *this, char *key1, char *key2) {
+    
+    this = file_load_keyspace1(this);
+    KeySpace1 *keySpace = keyspace1_init(this->used);
+    for (int i = 0; i < this->used; i++) {
+        Item *item = file_load_item(this->items[i]);
+        if (strcmp(item->key1, key1) >= 0 && strcmp(item->key2, key2) <= 0)
+            keyspace1_add(keySpace, item_dup(this->items[i]));
+        item_free(item);
+    }
+    keyspace1_free(this);
+    return keySpace;
+}
+
+void keyspace1_delete(KeySpace1 *this, char *key) {
+    
+    unsigned long ptr = this;
+    this = file_load_keyspace1(this);
+    for (int i = 0; i < this->used; i++) {
+        Item *item = file_load_item(this->items[i]);
+        if (strcmp(item->key1, key) == 0) {
+            for (int j = i; j + 1 < this->size && j < this->used; j++)
+                this->items[j] = this->items[j + 1];
+            this->used--;
+            file_update_keyspace1(this, ptr);
+            item_free(item);
+            break;
         }
+        item_free(item);
+    }
+    keyspace1_free(this);
+}
 
-    KeySpace->length = real_length;
-    return real_length;
-
-
+void keyspace1_free(KeySpace1 *this) {
+    free(this->items);
+    free(this);
 }

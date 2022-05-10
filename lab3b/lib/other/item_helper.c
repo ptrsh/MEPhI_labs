@@ -1,26 +1,27 @@
 #include "stdio.h"
 #include "stdlib.h"
-#include "string.h" 
+#include "string.h"
+#include "item_helper.h"
 
-offset fileItemAppend(Item *item) {
-    offset ptr = fileStringAppend(item->content);
-    fileStringAppend(item->key1);
-    fileStringAppend(item->key2);
+unsigned long file_add_item(Item *item) {
+    unsigned long ptr = file_add_string(item->info);
+    file_add_string(item->key1);
+    file_add_string(item->key2);
     FILE *file = fopen(FILENAME, MODE);
     fseek(file, 0, SEEK_END);
     fwrite(&item->version, sizeof(item->version), 1, file);
-    fwrite(&item->next, sizeof(offset), 1, file);
+    fwrite(&item->next, sizeof(unsigned long), 1, file);
     fclose(file);
     return ptr;
 }
 
-Item *fileItemLoad(offset ptr) {
+Item *file_load_item(unsigned long ptr) {
     Item *item = malloc(sizeof(Item));
-    item->content = fileStringLoad(ptr);
-    ptr += strlen(item->content) + 1;
-    item->key1 = fileStringLoad(ptr);
+    item->info = file_load_string(ptr);
+    ptr += strlen(item->info) + 1;
+    item->key1 = file_load_string(ptr);
     ptr += strlen(item->key1) + 1;
-    item->key2 = fileStringLoad(ptr);
+    item->key2 = file_load_string(ptr);
     ptr += strlen(item->key2) + 1;
     FILE *file = fopen(FILENAME, MODE);
     fseek(file, ptr, SEEK_SET);
@@ -30,8 +31,8 @@ Item *fileItemLoad(offset ptr) {
     return item;
 }
 
-void fileItemUpdate(Item *item, offset ptr) {
-    ptr += strlen(item->content) + 1;
+void file_update_item(Item *item, unsigned long ptr) {
+    ptr += strlen(item->info) + 1;
     ptr += strlen(item->key1) + 1;
     ptr += strlen(item->key2) + 1;
     FILE *file = fopen(FILENAME, MODE);

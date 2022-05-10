@@ -1,6 +1,6 @@
 #include <stdio.h>
 #include <string.h>
-#include "dialog.h"
+#include "menu.h"
 #include "../other/readline.h"
 
 void print_menu() {
@@ -15,11 +15,10 @@ void print_menu() {
     printf("|             5 | Удалить по (key1, key2)        |\n");
     printf("|             6 | Удалить по key1                |\n");
     printf("|             7 | Удалить по key2                |\n");
-    printf("|             8 | Удалить по key1 + версии       |\n");
-    printf("|             9 | Реорганизовать 1е пространство |\n");
-    printf("|            10 | Сфoрмировать новую таблицу из  |\n");
+    printf("|             8 | Реорганизовать 1е пространство |\n");
+    printf("|             9 | Сфoрмировать новую таблицу из  |\n");
     printf("|               | элементов 2го пространства     |\n");
-    printf("|            11 | Вывести таблицу                |\n");
+    printf("|            10 | Вывести таблицу                |\n");
     printf("+---------------+--------------------------------+\n");
     printf("Введите команду:\n");
 }

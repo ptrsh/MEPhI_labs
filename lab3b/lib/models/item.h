@@ -5,11 +5,16 @@ typedef struct Item {
     char *info;
     char *key1;
     char *key2;
-    int release;
+
+    int version;
     struct Item *next;
 } Item;
 
-Item *item_create(char *info, char *key1, char *key);
-void item_add(Item **head, Item *item);
-void item_free(Item *item);
-#endif
+Item *item_init(char *info, char *key1, char *key2);
+Item *item_dup(Item *this);
+Item *item_get_next(Item *this);
+
+void item_add(Item *this, Item *next);
+void item_free(Item *this);
+
+#endif 

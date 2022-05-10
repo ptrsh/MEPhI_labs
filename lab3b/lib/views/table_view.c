@@ -1,53 +1,45 @@
-#include <stdio.h>
-#include <malloc.h>
-#include <string.h>
+#include "stdio.h"
+#include "string.h"
+
+#include "../other/keyspace1_helper.h"
+#include "../other/item_helper.h"
+#include "../other/readline.h"
+#include "item_view.h"
 #include "table_view.h"
 
-void read_table_size(int *ks1_size, int *ks2_size) {
-    printf("Введите размер первого пространства: \n");
-    *ks1_size = read_num("Вы ввели некорректный размер!", 0, 100000);
-    printf("Введите размер второго пространства: \n");
-    *ks2_size = read_num("Вы ввели некорректный размер!", 0, 100000);
+Table *read_table_size() {
+    printf("Инициализация таблицы:\n");
+    int size1 = read_num("Вы ввели некорректный размер!", 0, 100000);
+    int size2 = read_num("Вы ввели некорректный размер!", 0, 100000);
+    return table_init(size1, size2);
 }
 
-void read_element(char **data, char **key1, char **key2) {
-    printf("Введите информацию:\n");
-    *data = get_str();
-    printf("Введите ключ 1:\n");
-    *key1 = get_str();
-    printf("Введите ключ 2:\n");
-    *key2 = get_str();
+Item *read_element() {
+    char *info = get_str("Информация: ");
+    char *key1 = get_str("Ключ1: ");
+    char *key2 = get_str("Ключ2: ");
+    return item_init(info, key1, key2);
 }
 
 void read_keys(char **key1, char **key2) {
-    printf("Введите ключ 1:\n");
-    *key1 = get_str();
-    printf("Введите ключ 2:\n");
-    *key2 = get_str();
+    *key1 = get_str("Ключ1: ");
+    *key2 = get_str("Ключ2: ");
 }
 
 void read_key(char **key) {
-    printf("Введите ключ:\n");
-    *key = get_str();
+    *key = get_str("Ключ: ");
 }
 
-void read_key_version(char **key, int *version) {
-    printf("Введите ключ:\n");
-    *key = get_str();
-    printf("Введите версию ключа:\n");
-    *version = read_num("Вы ввели некорректную версию!", 0, 100000);
-}
-
-void check_delete(int result) {
-    if (result)
-        printf("Элементы были успешно удалены!\n");
-    else 
-        printf("Элементы для удаления не были найдены!\n");
-}
-
-void check_add(int result) {
-    if (result)
-        printf("Элемент был успешно добавлен!\n");
-    else
-        printf("Недостаточно места!\n");
+void table_print(Table *this) {
+    printf("+---------------+\n");
+    printf("|    Таблица    |\n");
+    printf("+---------------+\n");
+    KeySpace1 *keySpace1 = file_load_keyspace1(this->keySpace1);
+    for (int i = 0; i < keySpace1->used; i++) {
+        Item *item = file_load_item(keySpace1->items[i]);
+        printf("| %-5s | %-5s | --- ", item->key1, item->key2);
+        print_item(item);
+        printf("+---------------+\n");
+    }
+    keyspace1_free(keySpace1);
 }

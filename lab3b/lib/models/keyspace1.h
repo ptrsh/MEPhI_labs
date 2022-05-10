@@ -1,12 +1,20 @@
-#include "keyspaces.h"
-#include "key.h"
+#include "stdlib.h"
+#include "item.h"
 
 #ifndef KEYSPACE1_H
 #define KEYSPACE1_H
 
-int keyspace1_check(KeySpace_t *KeySpace, int size, char *key);
-void keyspace1_add(KeySpace_t *KeySpace, int position, Item *item);
-void keyspace1_push_back(KeySpace_t *KeySpace, Item *item);
-int keyspace1_reorganise(KeySpace_t *KeySpace, int size);
+typedef struct KeySpace1 {
+    int size;
+    int used;
+    Item **items;
+} KeySpace1;
 
-#endif
+KeySpace1 *keyspace1_init(int size);
+int keyspace1_can_insert(KeySpace1 *this);
+int keyspace1_found(KeySpace1 *this, Item **dest, char *key);
+void keyspace1_add(KeySpace1 *this, Item *item);
+void keyspace1_delete(KeySpace1 *this, char *key);
+void keyspace1_free(KeySpace1 *this);
+
+#endif 

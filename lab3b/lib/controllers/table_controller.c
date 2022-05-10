@@ -1,25 +1,32 @@
-#include <stdio.h>
-#include <malloc.h>
+#include "../other/item_helper.h"
+#include "../views/errors.h"
+#include "../views/table_view.h"
+#include "../views/item_view.h"
 #include "table_controller.h"
 
-void create_table(Table **table) {
-    int ks1_size, ks2_size;
-    read_table_size(&ks1_size, &ks2_size);
-    *table = table_init(ks1_size, ks2_size);
-}
-
 void add_element(Table *table) {
-    char *data, *key1, *key2; 
-    read_element(&data, &key1, &key2);
-    int result = table_add(table, data, key1, key2);
-    check_add(result);
+    unsigned long ptr = read_element();
+    Item *item = file_load_item(ptr);
+    Item *tmp;
+    if (table_keypair_found(table, &tmp, item->key1, item->key2) == 1)
+        item_add(tmp, ptr);
+    else if (table_enough_space(table) == 1)
+        table_add(table, ptr);
+    else
+        insert_error();
+    item_free(item);
 }
 
 void search_by_keys(Table *table) {
     char *key1, *key2;
     read_keys(&key1, &key2);
-    Item *item = table_search_by_keys(table, key1, key2);
-    print_item(item);
+    Item *item;
+    if (table_keypair_found(table, &item, key1, key2) == 0) {
+        find_error();
+    } else {
+        item = file_load_item(item);
+        print_item(item);
+    }
     free(key1);
     free(key2);
 }
@@ -27,25 +34,33 @@ void search_by_keys(Table *table) {
 void search_in_ks1(Table *table) {
     char *key;
     read_key(&key);
-    Key *keys = table_search_in_ks1(table, key);
-    print_key(keys);
+    Item *item;
+    if (table_keypair_found_ks1(table, &item, key) == 0) {
+        find_error();
+    } else {
+        item = file_load_item(item);
+        print_item(item);
+    }
     free(key);
 }
 
 void search_in_ks2(Table *table) {
     char *key;
     read_key(&key);
-    Key *keys = table_search_in_ks2(table, key);
-    print_key(keys);
+    Item *item;
+    if (table_keypair_found_ks2(table, &item, key) == 0) {
+        find_error();
+    } else {
+        item = file_load_item(item);
+        print_item(item);
+    }
     free(key);
 }
-
 
 void delete_by_keys(Table *table) {
     char *key1, *key2;
     read_keys(&key1, &key2);
-    int result = table_delete_by_keys(table, key1, key2);
-    check_delete(result);
+    table_delete_by_keys(table, key1, key2);
     free(key1);
     free(key2);
 }
@@ -53,45 +68,24 @@ void delete_by_keys(Table *table) {
 void delete_in_ks1(Table *table) {
     char *key;
     read_key(&key);
-    int result = table_delete_in_ks1(table, key);
-    check_delete(result);
+    table_delete_by_key1(table, key);
     free(key);
 }
 
 void delete_in_ks2(Table *table) {
     char *key;
     read_key(&key);
-    int result = table_delete_in_ks2(table, key);
-    check_delete(result);
-    free(key);
-} 
-
-void delete_version_in_ks1(Table *table) {
-    char *key;
-    int version;
-    read_key_version(&key, &version);
-    int result = table_delete_version_in_ks1(table, key, version);
-    check_delete(result);
+    table_delete_by_key2(table, key);
     free(key);
 }
 
-void reorganise_ks1(Table *table) {
-    table_reorganise_ks1(table);
+void reorganise_ks2(Table *table) {
+    table_reorganise(table);
 }
 
 void new_table_from_kp2(Table *table) {
-    char *key;
-    read_key(&key);
-    Table *new_table = table_new_from_kp2(table, key);
-    print_table(new_table);
-    table_free(new_table);
-    free(key);
+    return;
 }
-
 void print_table(Table *table) {
-    printf("Первое пространство:\n");
-    print_keyspace(table->ks1, table->ks1_size);
-    printf("Второе пространство:\n");
-    print_keyspace(table->ks2, table->ks2_size);
+    table_print(table);
 }
-

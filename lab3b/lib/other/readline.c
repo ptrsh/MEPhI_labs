@@ -2,33 +2,32 @@
 #include <string.h>
 #include <stdlib.h>
 
-char *get_str() {
+char *get_str(char *message) {
     char buf[81] = {0};
     char *res = NULL;
-    int len = 0;
-    int n = 0;
+    int len = 0, n = 0;
+    printf("%s", message);
     do {
         n = scanf("%80[^\n]", buf);
-        if (n < 0){ 
-            if (!res){
+        if (n < 0) {
+            if (!res)
                 return NULL;
+        } else if (n > 0) {
+            int chunk_len = (int) strlen(buf);
+            int str_len = len + chunk_len;
+            res = realloc(res, str_len + 1);
+            memcpy(res + len, buf, chunk_len);
+            len = str_len;
+        } else {
+            scanf("%*c");
         }
-    } else if (n > 0){
-        int chunk_len = strlen(buf);
-        int str_len = len + chunk_len;
-        res = realloc(res, str_len + 1);
-        memcpy(res + len, buf, chunk_len);
-        len = str_len;
-    } else 
-        scanf("%*c");
-    
-    } while (n>0);
+    } while (n > 0);
+
     if (len > 0)
         res[len] = '\0';
-    else 
+    else
         res = calloc(1, sizeof(char));
     return res;
-    
 }
 
 int check(char *s) {
@@ -41,7 +40,7 @@ int check(char *s) {
 
 int read_num(char *error_msg, int min, int max) {
     do {
-        char *s = get_str();
+        char *s = get_str("[+] ");
         if (check(s)) {
             int num  = atoi(s);
             if ((num>=min)&&(num<=max)) {
