@@ -1,6 +1,6 @@
 # Лабораторная работа №3
 
-![url](https://i2.paste.pics/982489f9a63bae54999c46abfb6efcf3.png)
+![image](https://user-images.githubusercontent.com/23241074/168108715-4535fbb0-a6f1-4adc-8753-22b1940d9f6f.png)
 
 В таблице могут присутствовать элементы с одинаковым составными ключами (key1, key2)
 
