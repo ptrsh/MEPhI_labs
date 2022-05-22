@@ -1,0 +1,12 @@
+10
+abc
+20
+cba
+30
+ehd
+40
+lkl
+50
+qwe
+25
+ppp
