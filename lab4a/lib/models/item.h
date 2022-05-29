@@ -3,7 +3,7 @@
 
 typedef struct item {
     char *key;
-    unsigned int value;
+    int value;
     int version;
 } item;
 
