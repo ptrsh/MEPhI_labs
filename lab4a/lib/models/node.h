@@ -12,13 +12,13 @@ typedef struct node {
     bool left_thread;
 } node_t;
 
-node_t *create_node(char *key, unsigned value);
+node_t *create_node(char *key, int value);
 void insert_node(node_t *parent, node_t *child);
 node_t *find_least(node_t *node);
-void traversal(node_t *node);
-void delete(node_t *root, char *key);
+void traversal_tree(node_t *node);
+int delete(node_t *root, char *key, int version);
 node_t **search(node_t *root, char *key);
-node_t *find_nearest_max(node_t *node, char *key);
+node_t **find_nearest_max(node_t *node, char *key);
 void free_tree(node_t *node);
 
 #endif 
