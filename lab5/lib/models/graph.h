@@ -10,6 +10,7 @@ typedef struct graph{
     size_t size;
 } graph_t;
 
+graph_t *init_graph();
 void add_vertex(graph_t *graph, char *name, double x, double y);
 void add_edge(graph_t *graph, char *name1, char *name2);
 void delete_vertex(graph_t *graph, char *name);
@@ -17,6 +18,7 @@ void delete_edge(graph_t *graph, char *name1, char *name2);
 str_vector **get_connections(graph_t *this);
 str_vector *get_dfs(graph_t *graph, char *name1, char *name2);
 str_vector *find_shortest_path(graph_t *graph, char *name1, char *name2);
+void draw_graph(graph_t *this);
 void free_graph(graph_t *graph);
 
 #endif

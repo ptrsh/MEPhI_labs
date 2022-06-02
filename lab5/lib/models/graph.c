@@ -6,6 +6,14 @@
 #include "string_vector.h"
 #include "vector.h"
 
+graph_t *init_graph() {
+    graph_t *graph = malloc(sizeof(graph_t));
+    graph->size = 0;
+    graph->vertex = malloc(sizeof(vertex_t));
+    graph->matrix = malloc(sizeof(double *));
+    return graph;
+}
+
 void add_vertex(graph_t *graph, char *name, double x, double y) {
     graph->vertex[graph->size].name = name;
     graph->vertex[graph->size].x = x;
@@ -18,20 +26,6 @@ void add_vertex(graph_t *graph, char *name, double x, double y) {
     for (int i = 0; i<graph->size - 1; i++) {
         graph->matrix[i] = realloc(graph->matrix[i], sizeof(double)*(graph->size));
         graph->matrix[i][graph->size-1] = 0;
-    }
-}
-
-void print_graph(graph_t *graph) {
-    for (int i = 0; i<graph->size; i++)
-        printf("Вершина #%d\nИмя: %s\nx: %f\ny: %f\n\n", i, graph->vertex[i].name,\
-                                            graph->vertex[i].x, graph->vertex[i].y);
-}
-
-void print_matrix(graph_t *graph) {
-    for (int i = 0; i<graph->size; i++){
-        for (int j = 0; j<graph->size; j++)
-            printf("%6.1f ", graph->matrix[i][j]);
-        printf("\n\n");
     }
 }
 
@@ -85,7 +79,7 @@ void delete_vertex(graph_t *graph, char *name) {
             position = i;
             for (int j = position; j < graph->size - 1; j++) 
                 graph->vertex[j] = graph->vertex[j+1];
-            //free(graph->vertex[graph->size].name);
+            free(graph->vertex[graph->size].name);
             graph->vertex = realloc(graph->vertex, sizeof(vertex_t) * (graph->size-1));
             break;
         }
@@ -116,7 +110,7 @@ void delete_edge(graph_t *graph, char *name1, char *name2) {
 void free_graph(graph_t *graph) {
     for (int i=0; i<graph->size;i++) {
         free(graph->matrix[i]);
-        //free(graph->vertex[i].name);
+        free(graph->vertex[i].name);
     }
     free(graph->vertex);
     free(graph->matrix);
@@ -201,8 +195,6 @@ str_vector **get_connections(graph_t *this) {
         vectors = realloc(vectors, sizeof(str_vector*)*(size+1));
         vectors[size] = tmp;
         vectors[0] = size;
-
-        //str_vector_print(tmp);
         vector_free(connectivity);
         
     }
@@ -276,53 +268,3 @@ str_vector *find_shortest_path(graph_t *graph, char *name1, char *name2) {
 
 }
 
-/*
-int main() {
-    
-    graph_t *graph = malloc(sizeof(graph_t));
-    graph->size = 0;
-    graph->vertex = malloc(sizeof(vertex_t));
-    graph->matrix = malloc(sizeof(double *));
-    
-    
-    add_vertex(graph, "kek", 10.0, 20.0);
-    add_vertex(graph, "lol", 20.0, 10.0);
-    add_vertex(graph, "keklol", 110.0, 7.0);
-    add_vertex(graph, "keklolarbidol", 1.0, 2.0);
-    add_vertex(graph, "pp", 11.0, 22.0);
-    add_vertex(graph, "rp", 11.0, 2.0);
-    add_vertex(graph, "dd", 1.0, 22.0);
-    add_vertex(graph, "am", 1.0, 22.0);
-    add_vertex(graph, "amr", 11.0, 22.0);
-
-    add_edge(graph, "kek", "lol");
-    add_edge(graph, "kek", "keklol");
-    add_edge(graph, "kek", "keklolarbidol");
-    add_edge(graph, "keklol", "keklolarbidol");
-    add_edge(graph, "lol", "keklolarbidol");
-    add_edge(graph, "lol", "keklol");
-    add_edge(graph, "dd", "pp");
-    //add_edge(graph, "dd", "keklolarbidol");
-    add_edge(graph, "rp", "pp");
-    add_edge(graph, "dd", "pp");
-    add_edge(graph, "dd", "rp");
-    add_edge(graph, "kek", "rp");
-    add_edge(graph, "am", "amr");
-
-    //draw_graph(graph);
-
-
-    str_vector **res = get_connections(graph);
-    for (int i = 1; i<=(int)res[0]; i++) {
-        str_vector_print(res[i]);
-        str_vector_free(res[i]);
-    }
-
-    free(res);
-
-    free_graph(graph);
-    
-    
-}
-
-*/
