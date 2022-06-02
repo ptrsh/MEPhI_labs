@@ -4,7 +4,6 @@
 #include <math.h>
 #include "graph.h"
 #include "string_vector.h"
-#include "vector.h"
 
 graph_t *init_graph() {
     graph_t *graph = malloc(sizeof(graph_t));
@@ -20,7 +19,6 @@ void add_vertex(graph_t *graph, char *name, double x, double y) {
     graph->vertex[graph->size].y = y;
     graph->size += 1;
     graph->vertex = realloc(graph->vertex, sizeof(vertex_t) * (graph->size + 1));
-
     graph->matrix = realloc(graph->matrix, sizeof(double*)*graph->size);
     graph->matrix[graph->size - 1] = calloc(graph->size, sizeof(double));
     for (int i = 0; i<graph->size - 1; i++) {
@@ -117,108 +115,65 @@ void free_graph(graph_t *graph) {
     free(graph);
 }
 
-void draw_graph(graph_t *this) {
+void draw_graph(graph_t *graph) {
     FILE *file = fopen("graph.dot", "w");
-    fprintf(file, "strict graph { node [style=filled] ");
-    int used[this->size];
-    for (int u = 0; u < this->size; u++) {
-        for (int v = 0; v < this->size; v++) {
-            if (this->matrix[u][v] == 0) continue;
-            used[u] = 1;
-            used[v] = 1;
+    fprintf(file, "strict graph { node [shape=ellipse style=filled] ");
+    int *used = calloc(1, sizeof(int)*graph->size);
 
-            fprintf(file, "\"%s\" -- \"%s\" [label=%.2f] ", this->vertex[u].name, this->vertex[v].name, this->matrix[u][v]);
+    for (int i = 0; i < graph->size; i++)
+        if (used[i] == 0) 
+            fprintf(file, "\"%s\" ", graph->vertex[i].name);
+
+    for (int u = 0; u < graph->size; u++) {
+        for (int v = 0; v < graph->size; v++) {
+            if (graph->matrix[u][v] != 0) {
+                used[u] = 1;
+                used[v] = 1;
+                fprintf(file, "\"%s\"--\"%s\" [label=%.2f] ", graph->vertex[u].name, graph->vertex[v].name, graph->matrix[u][v]);
+            }
         }
     }
-    for (int i = 0; i < this->size; i++)
-        if (used[i] == 0) fprintf(file, "\"%s\" ", this->vertex[i].name);
+
     fprintf(file, "}");
+    free(used);
     fclose(file);
     system("dot graph.dot -Tpng -o graph.png");
-    printf("The graph is drawn in the graph.png\n");
+    printf("Граф успешно создан в graph.png\n");
 }
 
-vector_t *dfs(graph_t *this, int start, int end, vector_t *visited) {
-    if (this->matrix[start][end] != 0) return vector_init(1, end);
-
-    visited->data[start] = 1;
-
-    for (int i = 0; i < this->size; i++) {
-        if (visited->data[i] == 1 || this->matrix[start][i] == 0) continue;
-        vector_t *res = dfs(this, i, end, visited);
-        if (res != NULL) return vector_push(res, i);;
+str_vector *dfs(graph_t *graph, int start, int end, int visited[]) {
+    if (graph->matrix[start][end] != 0) {
+        str_vector *tmp = malloc(sizeof(str_vector));
+        str_vector_init(tmp);
+        str_vector_add(tmp, graph->vertex[end].name);
+        return tmp;
     }
 
+    visited[start] = 1;
+
+    for (int i = 0; i < graph->size; i++) {
+        if ((graph->matrix[start][i] == 0) || (visited[i] == 1))
+            continue;
+        str_vector *result = dfs(graph, i, end, visited);
+        if (result != NULL){
+            str_vector_add(result, graph->vertex[i].name);
+            return result;
+        }
+    }
     return NULL;
 }
 
-vector_t *dfs_sort(graph_t *this, int start, vector_t *visited) {
-    vector_t *order = vector_init(0, 0);
-    visited->data[start] = 1;
-    for (int i = 0; i < this->size; i++) {
-        if (this->matrix[start][i] == 0 || visited->data[i] == 1) continue;
-        vector_merge(order, dfs_sort(this, i, visited));
-    }
-    return vector_push(order, start);
-}
-
-vector_t *dfs_connections(graph_t *this, int start, vector_t *visited) {
-    visited->data[start] = 1;
-    vector_t *res = vector_init(1, start);
-    for (int i = 0; i < this->size; i++) {
-        if (this->matrix[start][i] == 0 || visited->data[i] == 1) continue;
-        vector_merge(res, dfs_connections(this, i, visited));
-    }
-    return res;
-}
-
-str_vector **get_connections(graph_t *this) {
-    str_vector **vectors = calloc(1,sizeof(str_vector));
-    vectors[0] = 0;
-    
-    vector_t *visited = vector_init(this->size, 0);
-    vector_t *order = vector_init(0, 0);
-
-    for (int i = 0; i < this->size; i++)
-        if (visited->data[i] == 0) vector_merge(order, dfs_sort(this, i, visited));
-    for (int i = 0; i < visited->size; i++) visited->data[i] = 0;
-    for (int i = 0; i < order->size; i++) {
-        if (visited->data[order->data[i]] == 1) continue;
-        vector_t *connectivity = dfs_connections(this, order->data[i], visited);
-        str_vector *tmp = malloc(sizeof(str_vector));
-        str_vector_init(tmp);
-        for (int i = 0; i<connectivity->size; i++) {
-            str_vector_add(tmp, this->vertex[connectivity->data[i]].name);
-        }
-        int size = (int)vectors[0];
-        size += 1;
-        vectors = realloc(vectors, sizeof(str_vector*)*(size+1));
-        vectors[size] = tmp;
-        vectors[0] = size;
-        vector_free(connectivity);
-        
-    }
-    
-    vector_free(visited);
-    vector_free(order);
-    return vectors;
-
-}
-
 str_vector *get_dfs(graph_t *graph, char *name1, char *name2) {
-    str_vector *vector = malloc(sizeof(str_vector));
-    str_vector_init(vector);
     int start;
     int end;
     get_position(graph, name1, name2, &start, &end);
-    vector_t *visited = vector_init(graph->size, 0);
-    vector_t *res = dfs(graph, start, end, visited);
-    vector_free(visited);
-    res = vector_push(res, start);
-    for (int i = 0; i < res->size; i++)
-        str_vector_add(vector, graph->vertex[res->data[i]].name);
-    vector_free(res);
-    return vector;
+    int *visited = calloc(graph->size, sizeof(int));
+    str_vector *res = dfs(graph, start, end, visited);
+    free(visited);
+    if (!res)
+        return 0;
+    str_vector_add(res, graph->vertex[start].name);
+    return res;
 }
 
 str_vector *find_shortest_path(graph_t *graph, char *name1, char *name2) {
@@ -268,3 +223,50 @@ str_vector *find_shortest_path(graph_t *graph, char *name1, char *name2) {
 
 }
 
+str_vector **get_connections(graph_t *graph) {
+    str_vector **vectors = calloc(1,sizeof(str_vector));
+    vectors[0] = 0;
+    int *used = calloc(graph->size, sizeof(int));
+    for (int i = 0; i < graph->size; i++) {
+        if (used[i] == 0) {
+            used[i] = 1;
+            int flag = 0;
+            for (int j = graph->size - 1; j>=0; j--) {
+                int *visited = calloc(graph->size, sizeof(int));
+                str_vector *res = dfs(graph, i, j, visited);
+                if (res) {
+                    str_vector_add(res, graph->vertex[i].name);
+                    for (int i = 0; i < res->size; i++) {
+                        int k = 0;
+                        while (strcmp(graph->vertex[k].name, res->strings[i])!=0)
+                            k += 1;
+                        used[k] = 1;
+                    }
+                    free(visited);
+                    int size = (int)vectors[0];
+                    size += 1;
+                    vectors = realloc(vectors, sizeof(str_vector*)*(size+1));
+                    vectors[size] = res;
+                    vectors[0] = size;
+                    flag = 1;
+                    
+                    break;
+                }
+                free(visited);
+            }
+            if (!flag) {
+                str_vector *tmp = malloc(sizeof(str_vector));
+                str_vector_init(tmp);
+                str_vector_add(tmp, graph->vertex[i].name);
+                int size = (int)vectors[0];
+                size += 1;
+                vectors = realloc(vectors, sizeof(str_vector*)*(size+1));
+                vectors[size] = tmp;
+                vectors[0] = size;
+            }
+            
+        }
+    }
+    free(used);
+    return vectors;
+}

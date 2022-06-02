@@ -40,8 +40,12 @@ void shortest_path_find(graph_t *graph) {
     read_vertex_name(&name1);
     read_vertex_name(&name2);
     str_vector *result = find_shortest_path(graph, name1, name2);
-    print_vector(result);
-    str_vector_free(result);
+    if (!result)
+        printf("Между вершинами нет пути!\n");
+    else {
+        print_vector(result);
+        str_vector_free(result);
+    }
     free(name1);
     free(name2);
 }
@@ -51,8 +55,12 @@ void go_dfs(graph_t *graph) {
     read_vertex_name(&name1);
     read_vertex_name(&name2);
     str_vector *result = get_dfs(graph, name1, name2);
-    print_vector(result);
-    str_vector_free(result);
+    if (!result)
+        printf("Между вершинами нет пути!\n");
+    else {
+        print_vector(result);
+        str_vector_free(result);
+    }
     free(name1);
     free(name2);
 }
