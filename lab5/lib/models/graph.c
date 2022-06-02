@@ -79,7 +79,7 @@ void delete_vertex(graph_t *graph, char *name) {
             position = i;
             for (int j = position; j < graph->size - 1; j++) 
                 graph->vertex[j] = graph->vertex[j+1];
-            free(graph->vertex[graph->size].name);
+            free(graph->vertex[position].name);
             graph->vertex = realloc(graph->vertex, sizeof(vertex_t) * (graph->size-1));
             break;
         }
