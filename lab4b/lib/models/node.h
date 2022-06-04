@@ -14,6 +14,7 @@ void traversal_tree(node_t *node, int num);
 node_t *delete(node_t *node, int key); 
 node_t *search(node_t *root, int key); 
 node_t **find_most_distant(node_t *node, int key); 
+void write_node(node_t *node, FILE *file);
 void free_tree(node_t *node); 
 
 #endif 

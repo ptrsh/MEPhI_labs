@@ -13,5 +13,6 @@ void traversal(node_t *root);
 void print(node_t *root); 
 node_t *load_from_file();
 void timing(node_t *node);
+void draw_tree(node_t *node);
 
 #endif

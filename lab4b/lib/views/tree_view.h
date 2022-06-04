@@ -14,5 +14,6 @@ void read_number(int *num);
 void print_nodes(node_t **nodes);
 void print_node(node_t *node);
 void print_tree(node_t *node, int padding, bool right_branch);
-
+void print_offset(unsigned offset);
+void read_numb(unsigned *key);
 #endif

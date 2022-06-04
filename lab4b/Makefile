@@ -6,7 +6,7 @@ TESTFLAGS = --leak-check=full
 
 SRCS_VIEWS = lib/views/tree_view.c lib/views/dialog.c 
 
-SRCS_MODELS =  lib/models/node.c 
+SRCS_MODELS =  lib/models/node.c  lib/models/extra_node.c
 
 SRCS_CONTROLLERS = lib/controllers/tree_controller.c
 

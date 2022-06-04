@@ -156,6 +156,22 @@ void traversal_tree(node_t *node, int num) {
     traversal_tree(node->right, num);
 }
 
+void write_node(node_t *node, FILE *file) {
+    if (!node) {
+        return;
+    }
+    
+    if (node->left != NULL) {
+        fprintf(file, "%d -> %d ", node->key, node->left->key);
+        write_node(node->left, file);
+    }
+    if (node->right != NULL) {
+        fprintf(file, "%d -> %d ", node->key, node->right->key);
+        write_node(node->right, file);
+    }
+}
+
+
 void free_tree(node_t *node) {
     if (!node)
         return;

@@ -1,6 +1,7 @@
 #include "controllers/tree_controller.h"
 #include "views/dialog.h"
 #include "other/readline.h"
+#include "models/extra_node.h"
 #include "models/node.h"
 
 #ifndef APP_H
@@ -8,6 +9,7 @@
 
 typedef struct app {
     node_t *tree;
+    Node *offsets;
 } app_t;
 
 

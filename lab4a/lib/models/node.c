@@ -307,4 +307,19 @@ void traversal_tree(node_t *node) {
 }
 
 
+void write_node(node_t *node) {
+    FILE *file = fopen("tree.dot", "a+");
+    if (node->left != NULL) {
+        fprintf(file, "%d[%d] -> %d[%d] ", node->data->value, node->data->version, node->left->data->value, node->left->data->version);
+        fclose(file);
+        write_node(node->left);
+    } else if (node->right != NULL) {
+        fprintf(file, "%d[%d] -> %d[%d] ", node->data->value, node->data->version, node->right->data->value, node->right->data->version);
+        fclose(file);
+        write_node(node->right);
+    } else {
+        fprintf(file, "%d[%d] ", node->data->value, node->data->version);
+        fclose(file);
+    }
 
+}

@@ -83,4 +83,43 @@ int read_num(char *error_msg, int min, int max) {
     } while (1);
 }
 
+int parseInt(char *str, int *res) {
+    *res = 0;
+    int i = 0, sign = 1;
+
+    if (strlen(str) < 1) return 0;
+
+    if (str[0] == '0' && strlen(str) > 1) return 0;
+
+    if (str[0] == '-') {
+        if (strlen(str) < 2 || str[1] > '9' || str[1] <= '0')
+            return 0;
+        i = 1;
+        sign = -1;
+    }
+
+    for (; i < strlen(str); i++) {
+        if (str[i] > '9' || str[i] < '0')
+            return 0;
+        *res = *res * 10 + (str[i] - '0');
+    }
+    *res *= sign;
+
+    return 1;
+}
+
+
+
+int read_large_num() {
+    int success = 0, res = 0;
+    while (!success) {
+        char *str = get_str();
+        success = parseInt(str, &res);
+        if (!success)
+            printf("Invalid input. Try again\n");
+        free(str);
+    }
+    return res;
+}
+
 

@@ -20,5 +20,6 @@ int delete(node_t *root, char *key, int version);
 node_t **search(node_t *root, char *key);
 node_t **find_nearest_max(node_t *node, char *key);
 void free_tree(node_t *node);
+void write_node(node_t *node);
 
 #endif 

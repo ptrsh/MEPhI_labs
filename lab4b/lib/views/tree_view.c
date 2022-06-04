@@ -14,9 +14,15 @@ void read_node(int *key, char **info) {
 }
 
 void read_key(int *key) {
-    printf("Введите ключ:\n");
+    printf("Введите ключ:\n");                         
     *key = read_num("Вы ввели некорректное число!", 0, 2147483647);
 }
+
+void read_numb(unsigned *key) {
+    printf("Введите число:\n");                         
+    *key = read_large_num();
+}
+
 
 void read_number(int *num) {
     printf("Введите число разрядов:\n");
@@ -55,4 +61,8 @@ void init_message(int tree_from_file) {
         printf("Дерево будет загружено из файла\n\n");
     else
         printf("Добавьте первый элемент в дерево\n");
+}
+
+void print_offset(unsigned offset) {
+    printf("Offset: %d\n", offset);
 }

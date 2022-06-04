@@ -110,3 +110,38 @@ void timing(node_t **node) {
     }
     //free_tree(root);
 }
+
+
+void draw_tree(node_t **node) {
+    node_t *root = *node;
+    FILE *file = fopen("tree.dot", "w");
+    fprintf(file, "strict digraph { node [shape=circle style=filled] ");
+    if (root != NULL) write_node(root, file);   
+    fprintf(file, "}");
+    fclose(file);
+    system("dot tree.dot -Tpng -o tree.png");
+    printf("Дерево нарисовано в tree.png\n");
+
+}
+
+Node *load_offsets() {
+    FILE *file = fopen("data.bin", "rb");
+    Node *root = nodeInit(0, 0);
+    while (!feof(file)) {
+        unsigned value;
+        fread(&value, sizeof(unsigned), 1, file);
+        root = nodeInsert(root, value, ftell(file));
+    }
+    fclose(file);
+    return root;
+}
+
+void search_in_file(Node *offsets) {
+    unsigned key;
+    read_numb(&key);
+    Node *node = nodeSearch(offsets, key);
+    if (node == NULL) 
+        printf("Число не найдено!\n");
+    else 
+        print_offset(node->value);
+}

@@ -1,5 +1,6 @@
 #include "../models/node.h"
 #include "../views/tree_view.h"
+#include "../models/extra_node.h"
 
 #ifndef TREE_CONTROLLER_H
 #define TREE_CONTROLLER_H
@@ -13,5 +14,7 @@ void traversal(node_t **root);
 void print(node_t **root); 
 node_t *load_from_file();
 void timing(node_t **node);
+void draw_tree(node_t **node);
+void search_in_file(Node *offsets);
 
 #endif

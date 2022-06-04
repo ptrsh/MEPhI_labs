@@ -135,3 +135,15 @@ void timing(node_t *node) {
     
     //free_tree(root);
 }
+
+void draw_tree(node_t *node) {
+    FILE *file = fopen("tree.dot", "w");
+    fprintf(file, "strict digraph { node [shape=circle style=filled] ");
+    fclose(file);
+    if (node != NULL) write_node(node);
+    file = fopen("tree.dot", "a+");
+    fprintf(file, "}");
+    fclose(file);
+    system("dot tree.dot -Tpng -o tree.png");
+    printf("The tree is drawn in the tree.png\n");
+}

@@ -4,7 +4,7 @@
 
 
 void (*controller[8])(node_t*) = {NULL, add_element, search_by_key,\
-    special_search_by_key, delete_by_key, traversal, print, timing};
+    special_search_by_key, delete_by_key, traversal, print, timing, draw_tree};
 
 app_t *app_create() {
     app_t *app = (app_t*)malloc(sizeof(app_t));
