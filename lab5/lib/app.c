@@ -3,9 +3,9 @@
 #include "app.h"
 
 
-void (*controller[10])(graph_t*) = {NULL, vertex_add, edge_add, vertex_delete,\
+void (*controller[11])(graph_t*) = {NULL, vertex_add, edge_add, vertex_delete,\
     edge_delete, shortest_path_find, go_dfs, components_get, matrix_print,\
-    graph_draw};
+    graph_draw, load_city};
 
 app_t *app_create() {
     app_t *app = (app_t*)malloc(sizeof(app_t));

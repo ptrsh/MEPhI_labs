@@ -6,7 +6,7 @@ TESTFLAGS = --leak-check=full
 
 SRCS_VIEWS = lib/views/dialog.c lib/views/graph_view.c
 
-SRCS_MODELS = lib/models/graph.c lib/models/string_vector.c
+SRCS_MODELS = lib/models/graph.c lib/models/string_vector.c lib/models/city.c
 
 SRCS_CONTROLLERS = lib/controllers/graph_conroller.c
 

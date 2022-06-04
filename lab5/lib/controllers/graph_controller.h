@@ -1,4 +1,6 @@
 #include "../models/graph.h"
+#include "../models/city.h"
+#include "../other/readline.h"
 #include "../views/graph_view.h"
 
 #ifndef GRAPH_CONTROLLER_H
@@ -13,5 +15,6 @@ void go_dfs(graph_t *graph);
 void components_get(graph_t *graph);
 void matrix_print(graph_t *graph);
 void graph_draw(graph_t *graph);
+void load_city(graph_t *graph);
 
 #endif

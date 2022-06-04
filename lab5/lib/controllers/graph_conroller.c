@@ -74,6 +74,24 @@ void components_get(graph_t *graph) {
     free(result);
 }
 
+void load_city(graph_t *graph) {
+    FILE *file = fopen("city.csv", "r");
+    char *str = get_str_file(file);
+    free(str);
+    while (str = get_str_file(file)) {
+        if (str) {
+            city_t *city = city_parse(str);
+            add_vertex(graph, city->name, city->x, city->y);
+            for (int i = 0; i <graph->size - 1; i++) 
+                if (rand() % 8 == 0) add_edge(graph, city->name, graph->vertex[i].name);
+            free(city);
+        }
+    }
+       
+    free(str);
+    fclose(file);  
+} 
+
 void matrix_print(graph_t *graph) {
     print_matrix(graph);
 }

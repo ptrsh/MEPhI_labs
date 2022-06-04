@@ -133,10 +133,10 @@ void draw_graph(graph_t *graph) {
             }
         }
     }
-
     fprintf(file, "}");
     free(used);
     fclose(file);
+    printf("kek");
     system("dot graph.dot -Tpng -o graph.png");
     printf("Граф успешно создан в graph.png\n");
 }
