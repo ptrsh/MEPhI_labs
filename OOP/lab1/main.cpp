@@ -7,7 +7,7 @@ int main() {
     int m, n;
     std::cout << "Введите количество строк:" << std::endl;
     m = read_num();
-    std::cout << "Введите количество стобцов:" << std::endl;
+    std::cout << "Введите количество столбцов:" << std::endl;
     n = read_num();
 
     matrix_t *matrix = init(m, n);

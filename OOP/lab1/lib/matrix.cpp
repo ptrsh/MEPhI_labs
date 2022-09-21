@@ -47,17 +47,17 @@ void print(matrix_t *matrix, std::string message) {
             int count = matrix->columns;
             while (tmp) {
                 for (int i = current; i < tmp->column; i++) {
-                    std::cout << 0 << " ";
+                    printf("%5d", 0);
                     count -= 1;
                 }
-                std::cout << tmp->num << " ";
+                printf("%5d", tmp->num);
                 current = tmp->column + 1;
                 tmp = tmp->next;
                 count -= 1;
             }
-            for (int i = 0; i < count; i++) std::cout << 0 << " ";
+            for (int i = 0; i < count; i++) printf("%5d", 0);
         }
-        else for (int i = 0; i < matrix->columns; i++) std::cout << 0 << " ";
+        else for (int i = 0; i < matrix->columns; i++) printf("%5d", 0);
         std::cout << "\n";
     }    
 }
