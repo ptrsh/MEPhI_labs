@@ -1,5 +1,7 @@
 #include <iostream>
 #include <string>
+#include <gtest/gtest.h>
+#include <gmock/gmock.h>
 
 #ifndef VECTOR_H
 #define VECTOR_H
@@ -27,6 +29,10 @@ class Vector {
         const double &operator[] (int index) const;
         double &operator[] (int index);
         double operator*(const Vector &vector);
+        FRIEND_TEST(Vector, Addition);
+        FRIEND_TEST(Vector, Substitution);
+        FRIEND_TEST(Vector, Multiplication);
+        FRIEND_TEST(Vector, Equal);
 
 
 };
