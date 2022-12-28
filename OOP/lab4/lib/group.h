@@ -3,16 +3,16 @@
 #include "student.h"
 #include "seniorStudent.h"
 #include "juniorStudent.h"
-#include "container.h"
 
 class Group {
 private:
     int indexGroup;
     int marksNumberMax;
     std::string typeStudents;
-    std::vector<Student*> ptrStudents; // таблица учащихся
+    std::vector<Student*> ptrStudents; 
 public:
-    Group ();
+    class UnknownStudentException : std::exception {};
+    Group() : indexGroup(0), marksNumberMax(0) {};
     int getIndexGroup();
     int getMarksNumberMax();
     std::string getTypeStudents();
@@ -25,10 +25,10 @@ public:
     Student& getStudentByPos(int pos);
     int getStudentPos (const std::string& inSurname);
 
-    void setGroupIndex (int);
-    void setGroupMaxNumberMarks (int);
-    void setTypeStudents (std::string);
+    void setGroupIndex (int id);
+    void setGroupMaxNumberMarks (int num);
+    void setTypeStudents (std::string in);
 
 };
 
-#endif //GROUP_H
+#endif 

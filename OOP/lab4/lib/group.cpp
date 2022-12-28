@@ -1,8 +1,9 @@
-#include "group.h"
-#include "container.h"
 #include <iostream>
 #include <algorithm>
 #include <vector>
+
+#include "group.h"
+
 using namespace std;
 
 bool compPtrStudents(Student* a, Student* b) {
@@ -11,12 +12,14 @@ bool compPtrStudents(Student* a, Student* b) {
     else return false;
 }
 
-Group::Group() : indexGroup(0), marksNumberMax(0) {}
-
 int Group::getIndexGroup() {return indexGroup;}
+
 int Group::getMarksNumberMax() {return marksNumberMax;}
+
 string Group::getTypeStudents() {return typeStudents;}
+
 int Group::getSize() {return ptrStudents.size();}
+
 bool Group::isStudentInGroup(const std::string& inSurname) {
     for (int i = 0; i < ptrStudents.size(); ++i) {
         if (ptrStudents[i]->getSurname() == inSurname)
@@ -24,17 +27,19 @@ bool Group::isStudentInGroup(const std::string& inSurname) {
     }
     return false;
 }
+
 Student& Group::getStudentBySurname(const std::string& inSurname) {
     for (int i = 0; i < ptrStudents.size(); ++i) {
         if (ptrStudents[i]->getSurname() == inSurname)
             return *(ptrStudents[i]);
     }
 }
-//be careful
+
 Student& Group::getStudentByPos(int pos) {return *(ptrStudents[pos]);}
 int Group::getStudentPos (const std::string& inSurname) {
     for (int i = 0; i < ptrStudents.size(); ++i)
         if (ptrStudents[i]->getSurname() == inSurname) return i;
+    throw Group::UnknownStudentException();
     return -1;
 }
 

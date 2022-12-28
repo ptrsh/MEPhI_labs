@@ -22,6 +22,7 @@ string Student::getTypeStudent() {return typeStudent;}
 string Student::getTopicERW() {return NODATA;}
 string Student::getPlaceERW() {return NODATA;}
 int Student::getMarkERW() {return NODATA_NUM;}
+
 bool Student::isThereDiscipline(std::string inDiscipline) {
     for (int i = 0; i < marksNumberNow; ++i) {
         if (Marks[i].discipline == inDiscipline) return true;
@@ -49,6 +50,7 @@ bool compMarks(Mark a, Mark b) {
     if (res < 0) return true;
     else return false;
 }
+
 void Student::insertMark(Mark inpMark) {
     for (int i = 0; i < marksNumberNow; ++i) {
         if (inpMark.discipline == Marks[i].discipline) {
@@ -62,6 +64,7 @@ void Student::insertMark(Mark inpMark) {
         sort(Marks.begin(), Marks.end(), compMarks);
     }
 }
+
 void Student::insertMarksVector(std::vector<Mark> inMarks) {Marks = inMarks; marksNumberNow = inMarks.size();}
 
 void Student::clearMarks() {

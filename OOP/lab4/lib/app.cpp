@@ -1,232 +1,113 @@
-#include "app.h"
 #include <iostream>
-#include <string>
-#include <limits>
+#include "app.h"
+
 using namespace std;
 
-
-
-void ignoreLine () {
-    std::cin.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
-}
-int scan (const char *msgs[], int N) {
-    const char *errmsg = "";
-    int i, n;
-
-    do {
-        cout << errmsg << endl;
-        errmsg = "You are wrong. Repeate, please!";
-
-        for (i = 0; i < N; ++i)
-            cout << (msgs[i]) << endl;;
-        cout << "Make your choice: --> ";
-        cin >> n;
-        if (cin.fail()) {
-            cin.clear();
-            ignoreLine();
-            n = -1;
-        }
-
-    } while (n < 0 || n >= N);
-    ignoreLine();
-    return n;
+void handleInvalidInput(std::istream &input) {
+    std::cout << "Invalid input! Try again!\n";
+    input.clear();
+    input.ignore(1024, '\n');
 }
 
-int enterId () {
-    const char *errmsg = "";
-    int choice = -1;
+template<typename T>
+T scan(std::istream &input, const std::string &message) {
+    T value;
+    bool fail;
     do {
-        if (errmsg != "")
-            cout << errmsg << endl;
-        errmsg = "You are wrong. Repeate, please!";
+        if (!message.empty()) std::cout << message << ": ";
+        input >> value;
+        if ((fail = input.fail())) handleInvalidInput(input);
+    } while (fail);
+    return value;
 
-        cout << "Enter group's id: ";
-        cin >> choice;
-        if (cin.fail()) {
-            cin.clear();
-            ignoreLine();
-            choice = -1;
-        }
-    } while (choice < 0);
-    return choice;
-}
-string enterTypeStudents () {
-    const char *errmsg = "";
-    int choice = -1;
-    do {
-        if (errmsg != "")
-            cout << errmsg << endl;
-        errmsg = "You are wrong. Repeate, please!";
-
-        cout << "Enter type of students:\n0. Juniors\n1. Seniors\n";
-        cin >> choice;
-        if (cin.fail()) {
-            cin.clear();
-            ignoreLine();
-            choice = -1;
-        }
-    } while (choice < 0 || choice > 1);
-    if (choice == 0) return JunS;
-    else return SenS;
-}
-int enterMaxMarksNumber () {
-    const char *errmsg = "";
-    int choice = 0;
-    do {
-        cout << errmsg << endl;
-        errmsg = "You are wrong. Repeate, please!";
-
-        cout << "Enter max number of marks: ";
-        cin >> choice;
-        if (cin.fail()) {
-            cin.clear();
-            ignoreLine();
-        }
-    } while (choice <= 0);
-    return choice;
-}
-Mark& enterMark(vector<Mark> inMarks) {
-    const char *errmsg = "";
-    std::string choice{};
-    for (int i = 0; i < inMarks.size(); ++i) cout << inMarks[i].discipline << ": " << inMarks[i].mark << endl;
-    do {
-        cout << errmsg << endl;
-        errmsg = "You are wrong. Repeate, please!";
-        cout << "Enter discipline: ";
-
-        cin >> choice;
-        if (cin.fail()) {
-            cin.clear();
-            ignoreLine();
-        }
-    } while (choice.empty());
-
-    errmsg = "";
-    int choiceMark = 0;
-    do {
-        cout << errmsg << endl;
-        errmsg = "You are wrong. Repeate, please!";
-
-        cout << "Enter mark: ";
-        cin >> choiceMark;
-        if (cin.fail()) {
-            cin.clear();
-            ignoreLine();
-        }
-    } while (choiceMark <= 0);
-
-    Mark* ptrRes = new Mark;
-    ptrRes->discipline = choice;
-    ptrRes->mark = choiceMark;
-    return *ptrRes;
-}
-int enterMarkERW() {
-    const char *errmsg = "";
-    int choice = -1;
-    do {
-        cout << errmsg << endl;
-        errmsg = "You are wrong. Repeate, please!";
-
-        cout << "Enter ERW mark: ";
-        cin >> choice;
-        if (cin.fail()) {
-            cin.clear();
-            ignoreLine();
-            choice = -1;
-        }
-    } while (choice < 0);
-    return choice;
-}
-string enterString (const string& message) {
-    const char *errmsg = "";
-    std::string res{};
-
-    do {
-        cout << errmsg << endl;
-        errmsg = "You are wrong. Repeate, please!";
-
-        cout << "Enter " << message << ": ";
-        cin >> res;
-        if (cin.fail()) {
-            cin.clear();
-            ignoreLine();
-        }
-    } while (res.empty());
-    return res;
-}
-int enterChangeType() {
-    const char *errmsg = "";
-    int choice = -1;
-    do {
-        cout << errmsg << endl;
-        errmsg = "You are wrong. Repeate, please!";
-
-        cout << "Change type of group?\n0. No\n1. Yes\n";
-        cin >> choice;
-        if (cin.fail()) {
-            cin.clear();
-            ignoreLine();
-            choice = -1;
-        }
-    } while (choice < 0 || choice > 1);
-    return choice;
 }
 
+App::App() {
+    controllers = {
+        [this]() { ShowGroups(); },
+        [this]() { ShowGroup(); },
+        [this]() { AddGroup(); },
+        [this]() { AddStudent(); },
+        [this]() { AddMark(); },
+        [this]() { EnterERW(); },
+        [this]() { ShowERW(); },
+        [this]() { GetAverageMark(); },
+        [this]() { TransferGroup(); },
+        [this]() { exit(); }
+    };
+        
+}
 
+void App::exit() { active = false; }
 
-int showGroups_D (GroupsTable& groupsTable) {
+void App::start() {
+    
+    active = true;
+    while (active) {
+        printMenu();
+        int command = scan<int>(std::cin, ":") - 1;
+        if (command >= controllers.size()) {
+            handleInvalidInput(std::cin);
+        } else controllers[command]();
+    }
+}
+
+Mark& enterMark(std::vector<Mark> inMarks);
+
+void App::printMenu() const{
+    std::cout << "\nMenu:\n";
+    std::cout << "1) Show groups\n";
+    std::cout << "2) Show group \n";
+    std::cout << "3) Add group \n";
+    std::cout << "4) Add student \n";
+    std::cout << "5) Add mark\n";
+    std::cout << "6) Enter ERW\n";
+    std::cout << "7) Show student's ERW\n";
+    std::cout << "8) Get average mark\n";
+    std::cout << "9) Transfer group\n";
+    std::cout << "10) Exit\n\n";
+}
+
+void App::ShowGroups() {
     groupsTable.showGroups();
-    return 1;
 }
-int showGroup_D (GroupsTable& groupsTable) {
+
+void App::ShowGroup() {
     const char *errmsg = "";
-    int choice = 0;
-    do {
-        if (errmsg != "")
-            cout << errmsg << endl;
-        errmsg = "You are wrong. Repeate, please!";
-
-        groupsTable.showGroups();
-        cout << "Enter group's id: ";
-        cin >> choice;
-        if (cin.fail()) {
-            cin.clear();
-            ignoreLine();
-        }
-    } while (choice <= 0);
-    ignoreLine();
-    if (groupsTable.findGroupInTable(choice) == -1) cout << "No such group exists\n";
+    groupsTable.showGroups();
+    int choice = scan<int>(std::cin, "Enter group id");
+    if (groupsTable.findGroupInTable(choice) == -1) std::cout << "No such group exists\n";
     else groupsTable.getGroupByID(choice).showGroup();
-    return 1;
+    
 }
 
-int addGroup_D (GroupsTable& groupsTable) {
-    int inId = enterId();
+void App::AddGroup() {
+    int inId = scan<int>(std::cin, "Enter group's id");
 
-    ignoreLine();
     if (groupsTable.findGroupInTable(inId) != -1)
-        cout << "Group is already in table!\n";
+        std::cout << "Group is already in table!\n";
     else {
         Group* inGroup = new Group;
         inGroup->setGroupIndex(inId);
 
-        std::string inType = enterTypeStudents();
+        std::string inType = scan<string>(std::cin, "Enter type of students:\n0. Juniors\n1. Seniors\n");
         inGroup->setTypeStudents(inType);
 
-        int inMaxMarksNumber = enterMaxMarksNumber();
+        int inMaxMarksNumber = scan<int>(std::cin, "Enter max number of marks");;
         inGroup->setGroupMaxNumberMarks(inMaxMarksNumber);
 
         groupsTable.addGroup(inGroup);
     }
-    return 1;
+    
 }
-int addStudent_D (GroupsTable& groupsTable) {
-    groupsTable.showGroups();
-    int inId = enterId();
 
-    ignoreLine();
+void App::AddStudent() {
+    groupsTable.showGroups();
+    int inId = scan<int>(std::cin, "Enter group's id");
+
+   
     if (groupsTable.findGroupInTable(inId) == -1)
-        cout << "No such group exists!\n";
+        std::cout << "No such group exists!\n";
     else {
         Group& group = groupsTable.getGroupByID(inId);
         Student* student;
@@ -239,14 +120,14 @@ int addStudent_D (GroupsTable& groupsTable) {
             student = whichStudent;
         }
 
-        student->setSurname(enterString("surname"));
-        student->setInitials(enterString("initials"));
+        student->setSurname(scan<string>(std::cin, "Enter surname"));
+        student->setInitials(scan<string>(std::cin, "Enter initials"));
         student->setMarksNumberMax(group.getMarksNumberMax());
         student->setTypeStudent(group.getTypeStudents());
 
         if (group.getSize() != 0) {
             Student& filledStudent = group.getStudentByPos(0);
-            vector<Mark> copiedMarks = filledStudent.getMarks();
+            std::vector<Mark> copiedMarks = filledStudent.getMarks();
             student->insertMarksVector(copiedMarks);
 
             for (int i = 0; i < student->getMarks().size(); ++i) {
@@ -255,25 +136,26 @@ int addStudent_D (GroupsTable& groupsTable) {
         }
         group.addStudent(student);
     }
-    return 1;
+    
 }
-int addMark_D (GroupsTable& groupsTable) {
-    groupsTable.showGroups();
-    int inId = enterId();
 
-    ignoreLine();
+void App::AddMark() {
+    groupsTable.showGroups();
+    int inId = scan<int>(std::cin, "Enter group's id");;
+   
+
     if (groupsTable.findGroupInTable(inId) == -1)
-        cout << "No such group exists!\n";
+        std::cout << "No such group exists!\n"; 
     else {
         Group &group = groupsTable.getGroupByID(inId);
-        for (int i = 0; i < group.getSize(); ++i) cout << group.getStudentByPos(i).getSurname() << endl;
-        std::string inSurname = enterString("surname");
+        for (int i = 0; i < group.getSize(); ++i) std::cout << group.getStudentByPos(i).getSurname() << std::endl;
+        std::string inSurname = scan<string>(std::cin, "Enter surname");
         if (group.isStudentInGroup(inSurname)) {
             Student &student = group.getStudentBySurname(inSurname);
             Mark inMark = enterMark(student.getMarks());
             student.insertMark(inMark);
 
-            if (group.getSize() == 1) return 1;
+            if (group.getSize() == 1) return;
             else {
                 int anotherStudentPos = group.getStudentPos(student.getSurname()) + 1;
                 if (anotherStudentPos >= group.getSize()) anotherStudentPos -= 2;
@@ -289,24 +171,23 @@ int addMark_D (GroupsTable& groupsTable) {
             }
         }
     }
-    return 1;
+    
 }
 
-int enterERW_D (GroupsTable& groupsTable) {
+void App::EnterERW() {
     groupsTable.showSeniorsGroups();
-    int inId = enterId();
-
-    ignoreLine();
+    int inId = scan<int>(std::cin, "Enter group's id");;
+   
     if (groupsTable.findGroupInTable(inId) == -1)
-        cout << "No such group exists!\n";
+        std::cout << "No such group exists!\n";
     else if (groupsTable.getGroupByID(inId).getTypeStudents() == SenS) {
         Group &group = groupsTable.getGroupByID(inId);
-        for (int i = 0; i < group.getSize(); ++i) cout << group.getStudentByPos(i).getSurname() << endl;
-        std::string inSurname = enterString("surname");
+        for (int i = 0; i < group.getSize(); ++i) std::cout << group.getStudentByPos(i).getSurname() << std::endl;
+        std::string inSurname = scan<string>(std::cin, "Enter surname");
         if (group.isStudentInGroup(inSurname)) {
-            string inTopic = enterString("ERW topic");
-            string inPlace = enterString("ERW place");
-            int inMark = enterMarkERW();
+            std::string inTopic = scan<string>(std::cin, "Enter ERW topic");
+            std::string inPlace = scan<string>(std::cin, "Enter ERW place");
+            int inMark = scan<int>(std::cin, "Enter ERW mark");;
 
             Student& student = group.getStudentBySurname(inSurname);
             student.setTopicERW(inTopic);
@@ -314,52 +195,52 @@ int enterERW_D (GroupsTable& groupsTable) {
             student.setMarkERW(inMark);
         }
     }
-    return 1;
+   
 }
-int showERW_D (GroupsTable& groupsTable) {
-    groupsTable.showSeniorsGroups();
-    int inId = enterId();
 
-    ignoreLine();
+void App::ShowERW() {
+    groupsTable.showSeniorsGroups();
+    int inId = scan<int>(std::cin, "Enter group's id");;
+
     if (groupsTable.findGroupInTable(inId) == -1)
-        cout << "No such group exists!\n";
+        std::cout << "No such group exists!\n";
     else if (groupsTable.getGroupByID(inId).getTypeStudents() == SenS) {
         Group& group = groupsTable.getGroupByID(inId);
-        for (int i = 0; i < group.getSize(); ++i) cout << group.getStudentByPos(i).getSurname() << endl;
-        std::string inSurname = enterString("surname");
+        for (int i = 0; i < group.getSize(); ++i) std::cout << group.getStudentByPos(i).getSurname() << std::endl;
+        std::string inSurname = scan<string>(std::cin, "Enter surname");
         if (group.isStudentInGroup(inSurname)) {
             Student& student = group.getStudentBySurname(inSurname);
-            cout << "Topic: " << student.getTopicERW() << endl;
-            cout << "Place: " << student.getPlaceERW() << endl;
-            cout << "Mark: " << student.getMarkERW() << endl;
+            std::cout << "Topic: " << student.getTopicERW() << std::endl;
+            std::cout << "Place: " << student.getPlaceERW() << std::endl;
+            std::cout << "Mark: " << student.getMarkERW() << std::endl;
         }
     }
-    return 1;
+   
 }
-int getAverageMark_D (GroupsTable& groupsTable) {
-    groupsTable.showGroups();
-    int inId = enterId();
 
-    ignoreLine();
+void App::GetAverageMark() {
+    groupsTable.showGroups();
+    int inId = scan<int>(std::cin, "Enter group's id");;
     if (groupsTable.findGroupInTable(inId) == -1)
-        cout << "No such group exists!\n";
+        std::cout << "No such group exists!\n";
     else {
         Group& group = groupsTable.getGroupByID(inId);
-        cout << group.getAverageMark();
+        std::cout << group.getAverageMark();
     }
-    return 1;
+    
 }
-int transferGroup_D (GroupsTable& groupsTable) {
-    groupsTable.showGroups();
-    int inId = enterId();
 
-    ignoreLine();
+void App::TransferGroup() {
+    groupsTable.showGroups();
+    int inId = scan<int>(std::cin, "Enter group's id");;
+
+   
     if (groupsTable.findGroupInTable(inId) == -1)
-        cout << "No such group exists!\n";
+        std::cout << "No such group exists!\n";
     else {
         Group& oldGroup = groupsTable.getGroupByID(inId);
-        int changeTypeGroup = enterChangeType();
-        int inMaxMarksNumber = enterMaxMarksNumber();
+        int changeTypeGroup = scan<int>(std::cin, "Change type of group?\n0. No\n1. Yes\n");;
+        int inMaxMarksNumber = scan<int>(std::cin, "Enter max number of marks");;
         if ((oldGroup.getTypeStudents() == JunS) && (changeTypeGroup == 1)) {
             Group *newGroup = new Group;
             newGroup->setGroupIndex(oldGroup.getIndexGroup());
@@ -383,37 +264,41 @@ int transferGroup_D (GroupsTable& groupsTable) {
             }
         }
     }
-    return 1;
+    
 }
 
+Mark& enterMark(vector<Mark> inMarks) {
+    const char *errmsg = "";
+    std::string choice{};
+    for (int i = 0; i < inMarks.size(); ++i) cout << inMarks[i].discipline << ": " << inMarks[i].mark << endl;
+    do {
+        cout << errmsg << endl;
+        errmsg = "You are wrong. Repeate, please!";
+        cout << "Enter discipline: ";
 
-
-void App::start() {
-    active = true;
-    int rc = 1;
-    const char *msgs[] = {"0. Quit", "1. Show groups", "2. Show group", "3. Add group", "4. Add student",
-                          "5. Add mark", "6. Enter ERW", "7. Show student's ERW",
-                          "8. Get average mark", "9. Transfer group"
-    };
-    int (*fptr[])(GroupsTable &) = {NULL, showGroups_D, showGroup_D,
-                                    addGroup_D, addStudent_D, addMark_D, enterERW_D, showERW_D,
-                                    getAverageMark_D, transferGroup_D};
-    const int NMsgs = sizeof(msgs) / sizeof(msgs[0]);
-
-    GroupsTable groupsTable{};
-    while (active) {
-        try {
-            while (rc = scan(msgs, NMsgs)) {
-                cout << "*********" << endl;
-                if (!fptr[rc](groupsTable)) active = false;
-            }
-        } catch (const char *str) {
-            cout << str << endl;
-            while (rc = scan(msgs, NMsgs)) {
-                cout << "*********" << endl;
-                if (!fptr[rc](groupsTable)) active = false;
-            }
+        cin >> choice;
+        if (cin.fail()) {
+            cin.clear();
+            std::cin.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
         }
-    }
+    } while (choice.empty());
 
+    errmsg = "";
+    int choiceMark = 0;
+    do {
+        cout << errmsg << endl;
+        errmsg = "You are wrong. Repeate, please!";
+
+        cout << "Enter mark: ";
+        cin >> choiceMark;
+        if (cin.fail()) {
+            cin.clear();
+            std::cin.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
+        }
+    } while (choiceMark <= 0);
+
+    Mark* ptrRes = new Mark;
+    ptrRes->discipline = choice;
+    ptrRes->mark = choiceMark;
+    return *ptrRes;
 }

@@ -15,4 +15,4 @@ public:
     void replaceByNewGroup(int id, Group* newGroup);
 };
 
-#endif //GROUPTABLE_H
+#endif 

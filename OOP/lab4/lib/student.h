@@ -1,8 +1,11 @@
+#include <gtest/gtest.h>
+
 #ifndef STUDENT_H
 #define STUDENT_H
+
 #include <string>
 #include <vector>
-#include "container.h"
+
 #define SenS "SENIOR"
 #define JunS "JUNIOR"
 
@@ -11,6 +14,12 @@ struct Mark {
     int mark;
 };
 
+
+/*
+* @class Student
+*
+* Base class
+*/
 class Student {
 protected:
     std::string surname{};
@@ -21,30 +30,32 @@ protected:
     std::string typeStudent{};
 public:
     Student(std::string inpSurname = "Noname", std::string inpInitials = "Noname");
+    std::vector<Mark>& getMarks();
     std::string getSurname();
     std::string getInitials();
     std::string getFullName();
     int getMarksNumberMax();
     int getMarksNumberNow();
-    std::vector<Mark>& getMarks();
-    std::string getTypeStudent(); //virtual
+    int getNumberEmptyMarks();
+    bool isThereDiscipline(std::string inDiscipline);
+
+    void setSurname(std::string inpSurname);
+    void setInitials(std::string inpInitials);
+    void setMarksNumberMax(int inpNumber);
+    void setTypeStudent(std::string inpInitials);
+    void insertMark(Mark inpMark);
+    void insertMarksVector(std::vector<Mark> inMarks);
+
+    virtual std::string getTypeStudent(); 
     virtual std::string getTopicERW();
     virtual std::string getPlaceERW();
     virtual int getMarkERW();
-    bool isThereDiscipline(std::string inDiscipline);
-    int getNumberEmptyMarks();
-
-    void setSurname(std::string);
-    void setInitials(std::string);
-    void setMarksNumberMax(int);
-    void setTypeStudent(std::string);
-    void insertMark(Mark);
-    void insertMarksVector(std::vector<Mark> inMarks);
-    virtual void setTopicERW(std::string);
-    virtual void setPlaceERW(std::string);
+    virtual void setTopicERW(std::string inpInitials);
+    virtual void setPlaceERW(std::string inp);
     virtual void setMarkERW(int);
-
     virtual void clearMarks();
+
+    FRIEND_TEST(Student, AddMarks);
 };
 
-#endif //STUDENT_H
+#endif 
