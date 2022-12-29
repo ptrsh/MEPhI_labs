@@ -1,5 +1,7 @@
 #include <iostream>
 #include <string>
+#include <gtest/gtest.h>
+
 
 #ifndef NEPHROID_H
 #define NEPHROID_H
@@ -20,6 +22,7 @@ class Nephroid {
     std::string getEquation() const;
 
     friend std::istream &operator>>(std::istream &input, Nephroid &nephroid);
+    FRIEND_TEST(Nephroid, setRadius);
 };
 
 #endif
