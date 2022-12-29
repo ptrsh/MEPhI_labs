@@ -4,6 +4,38 @@
 #define abs(x) ((x) > 0 ? (x) : -(x))
 #define MAX 2147483647
 
+
+Vector::Vector(const Vector &vector) {
+    data = new double[vector.size];
+    size = vector.size;
+    for (int i = 0; i < vector.size; i++) data[i] = vector[i]; 
+}
+
+Vector& Vector::operator= (const Vector &vector) {
+    if (this == &vector) return *this;
+    if (data != nullptr) delete[] data;
+    data = new double[vector.size];
+    size = vector.size;
+    for (int i = 0; i < vector.size; i++) data[i] = vector[i]; 
+    return *this;
+}
+
+Vector::Vector(Vector &&vector) noexcept : data(nullptr), size(0)  {
+    data = vector.data;
+    size = vector.size;
+    vector.data = nullptr;
+    vector.size = 0;
+}
+
+Vector& Vector::operator= (Vector &&vector) noexcept{
+    if (this == &vector) return *this;
+    if (data != nullptr) delete[] data;
+    data = vector.data;
+    size = vector.size;
+    vector.data = nullptr;
+    vector.size = 0;
+}
+
 template<typename T>
 T scan(std::istream &input, const std::string &message) {
     T value;
@@ -49,11 +81,6 @@ std::ostream &operator<<(std::ostream &out, const Vector &vector) {
     return out;
 }
 
-Vector::Vector(const Vector &vector) {
-    this->size = vector.size;
-    this->data = new double [this->size];
-    for (int i = 0; i < vector.size; i++) this[i] = vector[i];
-}
 
 Vector::Vector(double num) {
     size = 1;
@@ -62,19 +89,9 @@ Vector::Vector(double num) {
 }
 
 Vector::Vector(size_t size, double nums[]) {
-  
     this->size = size;
     data = new double [size];
     for (int i = 0; i < size; i++) data[i] = nums[i];
-}
-
-Vector& Vector::operator= (const Vector &vector) {
-    if (this == &vector) return *this;
-    if (this->size > 0) delete[] data;
-    this->size = vector.size;
-    this->data = new double [this->size];
-    for (int i = 0; i < vector.size; i++) (*this)[i] = vector[i];
-    return *this;
 }
 
 Vector Vector::operator+(const Vector &vector) {
@@ -99,7 +116,7 @@ double Vector::operator*(const Vector &vector) {
 }
 
 Vector::~Vector() {
-    if (size > 0) delete[] data;
+    if (data != nullptr) delete[] data;
 }
 
 void Vector::push(double num) {

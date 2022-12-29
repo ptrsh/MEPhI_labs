@@ -14,7 +14,7 @@ class App {
 
     void printMenu() const;
     void exit();
-    void getVector();
+    void setVector();
     void getNorm();
     void getAddition();
     void getSubstraction();

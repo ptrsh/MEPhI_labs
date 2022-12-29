@@ -16,7 +16,7 @@ void App::printMenu() const {
 
 App::App() {
     controllers = {
-        [this]() { getVector(); },
+        [this]() { setVector(); },
         [this]() { getAddition(); },
         [this]() { getSubstraction(); },
         [this]() { getMultiplication(); },
@@ -26,7 +26,7 @@ App::App() {
     };
 }
 
-void App::getVector() { 
+void App::setVector() { 
     Vector new_vector;
     std::cin >> new_vector; 
     vector = new_vector;
@@ -101,7 +101,7 @@ void App::printVector() const { std::cout << "Vector:\n" << vector << "\n"; }
 void App::exit() { active = false; }
 
 void App::start() {
-    getVector();
+    setVector();
     active = true;
     while (active) {
         printMenu();
