@@ -24,7 +24,7 @@ _start:
     push rax            ; save eax = a
     mov eax, ebx        ; eax = ebx = b
     imul ecx            ; eax = b * ecx = b * c
-    mov ebp, eax
+    mov ebp, eax        ; ebp = eax = b * c
     pop rax             ; restore eax = a
 
     ; calculate +a/(d + e)
